@@ -19,4 +19,4 @@ async function show(){
  for(const id of ['content','kpis'])document.getElementById(id).replaceChildren(render(v[id].children));
  document.querySelector('#status').textContent=v.status.children.split(' · 自动同步')[0]+' · GitHub 已发布数据';
 }
-fetch('manifest.json').then(r=>r.json()).then(m=>{manifest=m;for(const id of ['spread','region']){const values=id==='spread'?m.spreads:m.regions;values.forEach(x=>document.getElementById(id).add(new Option(x,x)));}['供需季节性','期货行情','基差与价差','产区天气','周策略'].forEach(x=>{const b=document.createElement('button');b.textContent=x;b.onclick=()=>{tab=x;show()};document.querySelector('#tabs').append(b)});document.querySelectorAll('select').forEach(e=>e.onchange=show);show()});
+fetch('manifest.json').then(r=>r.json()).then(m=>{manifest=m;for(const id of ['spread','region']){const values=id==='spread'?m.spreads:m.regions;values.forEach(x=>document.getElementById(id).add(new Option(x,x)));}['供需季节性','期货行情','基差与价差','产区天气','周策略','技术指标'].forEach(x=>{const b=document.createElement('button');b.textContent=x;b.onclick=()=>{tab=x;show()};document.querySelector('#tabs').append(b)});document.querySelectorAll('select').forEach(e=>e.onchange=show);show()});
