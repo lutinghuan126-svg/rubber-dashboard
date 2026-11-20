@@ -6,7 +6,7 @@ function render(n){
  if(typeof n!=='object')return document.createTextNode(String(n));
  const p=n.props||{};
  if(n.type==='Graph'){const e=document.createElement('div');e.className='dash-graph';setTimeout(()=>Plotly.newPlot(e,p.figure.data,p.figure.layout,{responsive:true,displaylogo:false}),0);return e;}
- if(n.type==='DataTable'){const box=document.createElement('div');box.className='data-table';const t=document.createElement('table');const h=t.insertRow();p.columns.forEach(c=>{const e=document.createElement('th');e.textContent=c.name;h.append(e)});p.data.forEach(r=>{const row=t.insertRow();p.columns.forEach(c=>row.insertCell().textContent=r[c.id]??'')});box.append(t);return box;}
+ if(n.type==='DataTable'){const box=document.createElement('div');box.className='data-table';const t=document.createElement('table');const h=t.insertRow();p.columns.forEach(c=>{const e=document.createElement('th');e.textContent=c.name;h.append(e)});p.data.forEach(r=>{const row=t.insertRow();p.columns.forEach(c=>{const cell=row.insertCell();const val=r[c.id]??'';cell.textContent=val;if((c.id==='影响割胶程度'||c.name==='影响割胶程度')){const colors={'严重影响':'#8E1616','重度影响':'#8E1616','中度影响':'#D14B4B','轻度影响':'#E89A9A'};if(colors[val]){cell.style.color=colors[val];cell.style.fontWeight='600';}}})});box.append(t);return box;}
  const e=document.createElement(tags[n.type]||'div');if(p.className)e.className=p.className;if(p.title)e.title=p.title;if(p.style)Object.assign(e.style,p.style);e.append(render(p.children));return e;
 }
 async function show(){
