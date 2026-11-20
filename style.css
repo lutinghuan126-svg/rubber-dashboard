@@ -38,3 +38,11 @@
 .raw-price-item .up{color:#c45855}
 .raw-price-item .down{color:#078371}
 @media(max-width:800px){.raw-prices{grid-template-columns:1fr}}
+
+.panel.macro-day{padding:18px 20px 10px;margin-bottom:16px}
+.panel.macro-day h3{margin:0 0 12px;font-size:16px}
+.macro-item{padding:12px 0;border-top:1px solid #e7edf2}
+.panel.macro-day .macro-item:first-of-type{border-top:0;padding-top:0}
+.macro-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.macro-time{font-size:12px;color:#65788a}
+.macro-body{margin:0 0 6px;font-size:14px;line-height:1.9;white-space:pre-wrap}
