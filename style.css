@@ -46,3 +46,13 @@
 .macro-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px}
 .macro-time{font-size:12px;color:#65788a}
 .macro-body{margin:0 0 6px;font-size:14px;line-height:1.9;white-space:pre-wrap}
+
+.raw-price-chart-title{font-size:16px;margin:18px 0 4px}
+.raw-price-charts{margin:8px 0 22px}
+.raw-price-charts .muted{margin:0 12px 8px}
+
+.nr-balance{margin:8px 0 22px}
+.nr-balance h3{font-size:16px;margin:18px 0 6px;color:#1b2f48}
+.nr-balance h3.nr-balance-sub{font-size:15px;margin:16px 0 6px}
+.nr-balance .muted{margin:0 0 8px}
+.nr-balance .dash-table-container{margin-bottom:18px}
