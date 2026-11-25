@@ -6,8 +6,8 @@
     "BR": "BR0"
   },
   "timezone": "Asia/Shanghai",
-  "fetchStartedAt": "2026-11-25T10:12:19+08:00",
-  "fetchedAt": "2026-11-25T10:12:20+08:00",
+  "fetchStartedAt": "2026-11-25T15:00:59+08:00",
+  "fetchedAt": "2026-11-25T15:01:00+08:00",
   "sha256": "c79cdb3035148ce519048ad1bccf7be973c929c2256187e89d8373464d18f47c",
   "latest": {
     "RU": "2026-11-24",

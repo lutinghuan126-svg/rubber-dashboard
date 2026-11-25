@@ -86,11 +86,11 @@ function render(){
   var divInfo=document.getElementById('divergence-info');
   divInfo.hidden=!st.divergence;
   if(divergence){divInfo.textContent='MACD柱拐头早期提示：顶 '+divergence.events.filter(e=>e.type==='top').length+' 处、底 '+divergence.events.filter(e=>e.type==='bottom').length+' 处；已失效 '+divergence.events.filter(e=>e.status==='invalidated').length+'、待重评 '+divergence.events.filter(e=>e.status==='reassessing').length+'（当前样本历史记录）。同色柱首次缩短/收浅即可触发，不等待交叉；当天K不参与。菱形在触发日，连线冻结当时端点，后续状态悬停可查，可能失效、不承诺反转。';}
-  // Independent source-available AGProLabs v1.3 frontend module; no fetching.
+  // 量价顶底: user-defined t73 rules (top / bottom1 next-day confirmed, bottom2 5/20/5). No fetching.
   var evr=null,evrPanel=document.getElementById('evr-panel');evrPanel.hidden=!st.evr;
   if(st.evr){
-   if(typeof AGProEVR==='undefined')evrPanel.textContent='量价顶底模块加载失败，请刷新本地页面；未生成替代信号。';
-   else{evr=AGProEVR.calculate(rows,{asOfDate:shanghaiTradingDate(),minTick:5});evrPanel.textContent=AGProEVR.panelText(evr);}
+   if(typeof UserPriceVolume==='undefined')evrPanel.textContent='量价顶底模块加载失败，请刷新本地页面；未生成替代信号。';
+   else{evr=UserPriceVolume.calculate(rows,{asOfDate:shanghaiTradingDate()});evrPanel.textContent=UserPriceVolume.panelText(evr);}
   }
   var dark = document.documentElement.getAttribute('data-theme')==='dark';
   var tc = dark ? '#ccc' : '#555', lc = dark ? '#444' : '#ddd';
@@ -179,12 +179,12 @@ function render(){
     }
   }
   if(divergence)series=series.concat(divergenceSeries(divergence,rows,subs.indexOf('MACD')+1));
-  if(evr)series=series.concat(AGProEVR.series(evr));
+  if(evr)series=series.concat(UserPriceVolume.series(evr));
   var allIdx = xAxes.map(function(_,i){return i;});
   chart.setOption({
     animation:false,
     legend:{type:'scroll',data:legendData,selectedMode:true,selected:Object.fromEntries(Object.entries(legendSelection).filter(function(entry){return legendData.indexOf(entry[0])!==-1;})),top:0,left:layout.left,right:layout.right,textStyle:{color:tc}},
-    tooltip:{trigger:'axis', axisPointer:{type:'cross'},formatter:evr?function(params){return AGProEVR.axisTooltip(params,evr,rows);}:undefined},
+    tooltip:{trigger:'axis', axisPointer:{type:'cross'},formatter:evr?function(params){return UserPriceVolume.axisTooltip(params,evr,rows);}:undefined},
     axisPointer:{link:[{xAxisIndex:'all'}]},
     grid:grids, xAxis:xAxes, yAxis:yAxes,
     dataZoom:[{type:'inside',xAxisIndex:allIdx,start:zoom.start,end:zoom.end},{type:'slider',xAxisIndex:allIdx,bottom:8,height:20,start:zoom.start,end:zoom.end}],
