@@ -7,7 +7,7 @@ function render(n){
  const p=n.props||{};
  if(n.type==='Graph'){const e=document.createElement('div');e.className='dash-graph';setTimeout(()=>Plotly.newPlot(e,p.figure.data,p.figure.layout,{responsive:true,displaylogo:false}),0);return e;}
  if(n.type==='DataTable'){const box=document.createElement('div');box.className='data-table';const t=document.createElement('table');const h=t.insertRow();p.columns.forEach(c=>{const e=document.createElement('th');e.textContent=c.name;h.append(e)});p.data.forEach(r=>{const row=t.insertRow();p.columns.forEach(c=>{const cell=row.insertCell();const val=r[c.id]??'';cell.textContent=val;if((c.id==='影响割胶程度'||c.name==='影响割胶程度')){const colors={'严重影响':'#8E1616','重度影响':'#8E1616','中度影响':'#D14B4B','轻度影响':'#E89A9A'};if(colors[val]){cell.style.color=colors[val];cell.style.fontWeight='600';}}})});box.append(t);return box;}
- const e=document.createElement(tags[n.type]||'div');if(p.className)e.className=p.className;if(p.title)e.title=p.title;if(p.style)Object.assign(e.style,p.style);e.append(render(p.children));return e;
+ const e=document.createElement(n.type==='Iframe'?'iframe':tags[n.type]||'div');if(n.type==='Iframe'){e.src=(p.src||'').replace(/^\/assets\/technical-charts\//,'technical-charts/');e.title=p.title||'技术图表';}if(p.className)e.className=p.className;if(p.title)e.title=p.title;if(p.style)Object.assign(e.style,p.style);e.append(render(p.children));return e;
 }
 async function show(){
  const token=++sequence;
@@ -19,4 +19,4 @@ async function show(){
  for(const id of ['content','kpis'])document.getElementById(id).replaceChildren(render(v[id].children));
  document.querySelector('#status').textContent=v.status.children.split(' · 自动同步')[0]+' · GitHub 已发布数据';
 }
-fetch('manifest.json').then(r=>r.json()).then(m=>{manifest=m;for(const id of ['spread','region']){const values=id==='spread'?m.spreads:m.regions;values.forEach(x=>document.getElementById(id).add(new Option(x,x)));}['供需季节性','期货行情','基差与价差','产区天气','周策略','技术指标','每日宏观'].forEach(x=>{const b=document.createElement('button');b.textContent=x;b.onclick=()=>{tab=x;show()};document.querySelector('#tabs').append(b)});document.querySelectorAll('select').forEach(e=>e.onchange=show);show()});
+fetch('manifest.json').then(r=>r.json()).then(m=>{manifest=m;for(const id of ['spread','region']){const values=id==='spread'?m.spreads:m.regions;values.forEach(x=>document.getElementById(id).add(new Option(x,x)));}['供需季节性','期货行情','基差与价差','产区天气','周策略','技术指标','技术图表','每日宏观'].forEach(x=>{const b=document.createElement('button');b.textContent=x;b.onclick=()=>{tab=x;show()};document.querySelector('#tabs').append(b)});document.querySelectorAll('select').forEach(e=>e.onchange=show);show()});
