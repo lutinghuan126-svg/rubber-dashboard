@@ -1,0 +1,38 @@
+Effort vs Result Reaction Map [AGPro Series], AGProLabs, v1.3.
+Original public Pine Script v6 source: agpro-effort-result-v1.3.pine
+Source: https://www.tradingview.com/script/HeDQBrkV-Effort-vs-Result-Reaction-Map-AGPro-Series/
+JavaScript frontend port and ECharts/HTML display adaptations: 2026-11-25.
+No affiliation, endorsement or guaranteed TradingView-identical rendering/data.
+
+The original contains no alternative license declaration. TradingView official
+Publishing scripts documentation states: All open-source scripts on TradingView
+use Mozilla Public License 2.0 by default; authors may specify an alternative in
+the source code. https://www.tradingview.com/pine-script-docs/writing/publishing/
+The original and derivative kline-agpro.js are provided in editable Source Code
+Form, under MPL-2.0 (LICENSE-MPL-2.0.txt); preserve author attribution and this
+notice when distributing. Other independent application files retain their own
+applicable licenses. This is a local frontend port, NOT a TradingView publication.
+If republishing on TradingView, its additional Open-source reuse rules apply.
+
+Computational mapping: Pine lines 74-112 defaults; 168-216 core; 218-230
+confirmation/cooldown; 239-273 single-pending close-only proof, adverse first;
+281-324 last-12 labels and one replaceable/expiring current reaction range;
+347-386 current panel context. No imports.
+Defaults follow actual input() values, NOT contradictory tooltip prose:
+showLabelConfidence=true, showMarkers=false, cooldownBars=40.
+Pine SMA/RMA use full non-na seed; ATR=RMA(TR(true),14), safeATR falls back to TR
+then minTick before ATR exists. RU/NR/BR minTick=5, exchange contract specs.
+App conservatively excludes Shanghai-calendar today/future from AGPro input;
+current-day closes are not asserted final. Pure engine also supports a single
+unconfirmed final bar for confirmed-gate/unchanged-proof tests.
+
+Display adaptations, not changes to the engine: labels use ECharts scatter-label
+anchors; one HTML panel is above the plot with original names/scores and attribution.
+The reaction range's theoretical right edge is event bar+32; only existing dates
+are painted, with a badge centered in the visible range. No future trading dates
+or candles are invented. Default markers are off, and no alert/notification is
+sent. Mobile/fullscreen display is responsive, not TradingView-pixel-identical.
+Only 250 Sina continuous daily candles are available, which can differ from
+TradingView's data/history/adjustments; numerical parity on TradingView runtime
+has not been independently measured. Historical follow-through rate is sample
+statistics, not predictive accuracy, guaranteed reversal, or a top/bottom oracle.

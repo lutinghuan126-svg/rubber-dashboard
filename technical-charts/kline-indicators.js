@@ -109,45 +109,65 @@ function detectMacdDivergence(rows,histogram,options){
   var segments=[],events=[],previous={1:null,'-1':null},active=null;
   function greater(a,b){return a-b>1e-9*Math.max(1,Math.abs(a),Math.abs(b));}
   function sign(v){return Math.abs(v)<=1e-10?0:v>0?1:-1;}
+  function snapshot(s){
+    var out={};['sign','startIndex','startDate','endIndex','endDate','priceIndex','priceDate','price','histIndex','histDate','hist','eligible','turned'].forEach(function(k){out[k]=s[k];});return out;
+  }
   function begin(i,color){
     return {sign:color,startIndex:i,startDate:rows[i][0],endIndex:i,endDate:rows[i][0],
       priceIndex:i,priceDate:rows[i][0],price:rows[i][color>0?4:3],
-      histIndex:i,histDate:rows[i][0],hist:histogram[i]};
+      histIndex:i,histDate:rows[i][0],hist:histogram[i],turned:false,eventIndex:null,
+      eligible:i>0&&i>=warmup-1};
   }
-  function extend(segment,i){
-    segment.endIndex=i;segment.endDate=rows[i][0];
-    var price=rows[i][segment.sign>0?4:3];
-    // Equal extrema keep the first date; one endpoint per whole color wave.
-    if(segment.sign>0?greater(price,segment.price):greater(segment.price,price)){
-      segment.price=price;segment.priceIndex=i;segment.priceDate=rows[i][0];
-    }
-    if(segment.sign>0?greater(histogram[i],segment.hist):greater(segment.hist,histogram[i])){
-      segment.hist=histogram[i];segment.histIndex=i;segment.histDate=rows[i][0];
-    }
+  function extend(s,i){
+    s.endIndex=i;s.endDate=rows[i][0];
+    var price=rows[i][s.sign>0?4:3],priceChanged=s.sign>0?greater(price,s.price):greater(s.price,price);
+    if(priceChanged){s.price=price;s.priceIndex=i;s.priceDate=rows[i][0];}
+    var strength=s.sign*histogram[i],oldPeak=s.sign*s.hist,prevStrength=s.sign*histogram[i-1];
+    var stronger=greater(strength,prevStrength),peakReopened=stronger&&!greater(oldPeak,strength);
+    if(greater(strength,oldPeak)){s.hist=histogram[i];s.histIndex=i;s.histDate=rows[i][0];}
+    // Equal peak plateaus keep their FIRST date. Equal bars alone do not turn.
+    if(peakReopened)s.turned=false;
+    if(greater(prevStrength,strength))s.turned=true;
+    return {priceChanged:priceChanged,peakReopened:peakReopened};
   }
-  function finish(confirmIndex){
-    active.confirmedIndex=confirmIndex;active.confirmedOn=rows[confirmIndex][0];
-    // Exclude the first/truncated dataset wave and waves crossing warmup.
-    active.eligible=active.startIndex>0&&active.startIndex>=warmup-1;
-    var prev=previous[active.sign];
-    if(active.eligible&&prev&&prev.eligible){
-      var top=active.sign>0;
-      var priceNew=top?greater(active.price,prev.price):greater(prev.price,active.price);
-      // Equal histogram peak/trough counts as "has NOT exceeded".
-      var weaker=top?!greater(active.hist,prev.hist):!greater(prev.hist,active.hist);
-      if(priceNew&&weaker)events.push({type:top?'top':'bottom',from:prev,to:active,
-        confirmedIndex:confirmIndex,confirmedOn:rows[confirmIndex][0]});
-    }
-    segments.push(active);previous[active.sign]=active;active=null;
+  function review(e,s,i,kind,status,reason){
+    e.status=status;e.statusOn=rows[i][0];e.latest=snapshot(s);
+    e.reviews.push({index:i,on:rows[i][0],kind:kind,status:status,reason:reason,point:snapshot(s)});
+    if(status==='invalidated'){e.invalidatedOn=rows[i][0];e.invalidatedIndex=i;}
+  }
+  function evaluate(s,i,changes){
+    var prev=previous[s.sign];if(!s.eligible||!prev||!prev.eligible)return;
+    var top=s.sign>0,priceNew=top?greater(s.price,prev.price):greater(prev.price,s.price);
+    var weaker=top?!greater(s.hist,prev.hist):!greater(prev.hist,s.hist);
+    var e=s.eventIndex===null?null:events[s.eventIndex];
+    if(e)e.latest=snapshot(s);
+    // Never delete an early historical signal after a later extension invalidates it.
+    if(e&&e.status==='invalidated')return;
+    if(!weaker){if(e)review(e,s,i,'invalidation','invalidated','同段柱峰扩大超过前段，早期提示失效');return;}
+    if(e&&changes.peakReopened)review(e,s,i,'expansion','reassessing','柱峰扩大或重访等高峰，等待再次拐头重评');
+    if(e&&changes.priceChanged)review(e,s,i,'price',e.status,'同段价格产生新极值；原触发点与连线保留');
+    if(!s.turned||!priceNew)return;
+    if(!e){
+      s.eventIndex=events.length;
+      events.push({id:(top?'top':'bottom')+'-'+s.startDate,type:top?'top':'bottom',from:snapshot(prev),to:snapshot(s),
+        triggeredIndex:i,triggeredOn:rows[i][0],confirmedIndex:i,confirmedOn:rows[i][0],
+        status:'active',statusOn:rows[i][0],latest:snapshot(s),reviews:[]});
+    }else if(e.status==='reassessing')review(e,s,i,'turn','active','已再次拐头，按当时柱峰及价格重评仍成立');
+  }
+  function finish(i){
+    // If a wave jumps directly across zero, that boundary is its first observable
+    // weakening bar; normally the SAME-color contraction has already triggered.
+    active.turned=true;evaluate(active,i,{priceChanged:false,peakReopened:false});
+    if(active.eventIndex!==null){var e=events[active.eventIndex];if(e.status!=='invalidated')review(e,active,i,'end','retained','后续柱段已结束，早期提示条件仍保留；并非反转保证');}
+    var done=snapshot(active);done.endedOn=rows[i][0];segments.push(done);previous[active.sign]=done;active=null;
   }
   for(var i=0;i<closed;i++){
     var color=sign(histogram[i]);
     if(active&&color!==active.sign)finish(i);
     if(!active&&color)active=begin(i,color);
-    else if(active)extend(active,i);
+    else if(active)evaluate(active,i,extend(active,i));
   }
-  // The unfinished last wave is returned for diagnostics, never a confirmed event.
-  return {events:events,segments:segments,pendingSegment:active,closedBars:closed,
+  return {events:events,segments:segments,pendingSegment:active?snapshot(active):null,closedBars:closed,
     warmup:warmup,asOfDate:asOf,histogram:histogram.slice()};
 }
 function macdDivergenceCalc(rows,options){
