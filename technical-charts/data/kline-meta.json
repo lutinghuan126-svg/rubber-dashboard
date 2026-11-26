@@ -1,42 +1,62 @@
 {
-  "source": "历史：新浪主力连续日K；2026-11-25：日报群提供（已与交易所核对）直接补入",
+  "source": "历史：新浪主力连续日K；2026-11-25 与 2026-11-26：盘后正式稿/交易所官方快讯（经日报技术指标稿）直接补入，不是新浪实抓",
   "contracts": {
     "RU": "RU0",
     "NR": "NR0",
     "BR": "BR0"
   },
   "timezone": "Asia/Shanghai",
-  "fetchStartedAt": "2026-11-25T16:25:22+08:00",
-  "fetchedAt": "2026-11-25T16:30:46+08:00",
-  "sha256": "d23bb25a1c656bfde8eeff0a1a82f39d2bd8e4972867e4dd7dc28356df6d4cde",
+  "fetchStartedAt": "2026-11-26T15:26:20+08:00",
+  "fetchedAt": "2026-11-26T15:26:20+08:00",
+  "sha256": "d9189f70b899ade4795e3b534cf254283bbfaf531d4ae0bc716633c7de8fff7d",
   "latest": {
-    "RU": "2026-11-25",
-    "NR": "2026-11-25",
-    "BR": "2026-11-25"
+    "RU": "2026-11-26",
+    "NR": "2026-11-26",
+    "BR": "2026-11-26"
   },
   "counts": {
     "RU": 250,
     "NR": 250,
     "BR": 250
   },
-  "notice": "11月25日由SHFE/INE官方完整日K直接补入，不是新浪已更新；成交单位与历史一致，持仓/结算存元数据，不改变原OHLCV schema。量价顶底等原算法与当天排除规则未改。",
+  "notice": "11月26日由盘后正式稿/交易所官方快讯（经日报技术指标稿）直接补入完整日K（25日夜盘+26日日盘），不是新浪已更新；成交单位与历史一致为手，持仓/结算存元数据，不改变原OHLCV schema，不用结算价当收盘价。连续合约今日仍跟踪 RU2701 / NR2701 / BR2701，不改为 RU2705。量价顶底与早期背离等原算法若仍排除当天，今日K不参与确认。",
   "sinaFetchedAt": "2026-11-25T16:25:23+08:00",
-  "manualUpdatedAt": "2026-11-25T16:30:46+08:00",
+  "manualUpdatedAt": "2026-11-26T15:26:20+08:00",
   "fetchedAtMeaning": "本次官方补K写入时间；不是新浪抓取时间",
   "officialSupplement": {
-    "date": "2026-11-25",
+    "date": "2026-11-26",
+    "session": "前夜盘 + 当日日盘完整日K；收盘价不使用结算价",
+    "method": "人工授权：按盘后正式技术指标稿中的已完成日K直接补入；同日覆盖幂等、滚动250条；未向新浪取数",
+    "inputSource": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
+    "excelCloseCrossCheck": {
+      "RU": {
+        "xlsxLatestDate": "2026-11-26",
+        "xlsxClose": 18550.0,
+        "klineClose": 18550.0,
+        "match": true
+      },
+      "NR": {
+        "xlsxLatestDate": "2026-11-26",
+        "xlsxClose": 15860.0,
+        "klineClose": 15860.0,
+        "match": true
+      },
+      "BR": {
+        "xlsxLatestDate": "2026-11-26",
+        "xlsxClose": 15285.0,
+        "klineClose": 15285.0,
+        "match": true
+      },
+      "excelFilesNotModified": true
+    },
     "sources": {
       "RU": {
-        "source": "日报群/技术指标盘后正式稿；本执行者已独立与交易所官方日交易快讯逐项核对",
+        "source": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
         "contract": "RU2701",
-        "url": "https://www.shfe.com.cn/data/tradedata/future/dailydata/kx20261125.dat",
-        "reportDate": "20261125",
-        "officialUpdatedAt": "20261125 15:04:02 Asia/Shanghai",
-        "reportSha256": "4b309952192c8b880f4b1b33aef3474275f5d942c274d6f89e7ef508515c77f4",
-        "openInterest": 93883.0,
-        "settlement": 18410.0,
-        "volumeUnit": "手（已与11/24同合约新浪OHLCV逐项验证，无需乘2）",
-        "dailyWriterVerification": "微信日报撰写者独立核实完整OHLC、成交与持仓；已有留档/workspace/ru-close/2026-11-25/hq.txt及min_final.json，未重新取数",
+        "continuous": "RU0",
+        "openInterest": 82857.0,
+        "settlement": 18530.0,
+        "volumeUnit": "手",
         "units": {
           "price": "元/吨",
           "volume": "手",
@@ -44,16 +64,12 @@
         }
       },
       "NR": {
-        "source": "日报群/技术指标盘后正式稿；本执行者已独立与交易所官方日交易快讯逐项核对",
+        "source": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
         "contract": "NR2701",
-        "url": "https://www.ine.cn/data/tradedata/future/dailydata/kx20261125.dat",
-        "reportDate": "20261125",
-        "officialUpdatedAt": "20261125 15:04:03 Asia/Shanghai",
-        "reportSha256": "3bdb72cbe1501703312de751d8c1812826ac3afde8cc93e39d89fdd7105a3824",
-        "openInterest": 48470.0,
-        "settlement": 15640.0,
-        "volumeUnit": "手（已与11/24同合约新浪OHLCV逐项验证，无需乘2）",
-        "dailyWriterVerification": "微信日报撰写者仅交叉确认收盘；未独立核实本品种完整OHLCVOI，完整数据验证来自本执行者先前SHFE/INE官方原始报表",
+        "continuous": "NR0",
+        "openInterest": 42480.0,
+        "settlement": 15825.0,
+        "volumeUnit": "手",
         "units": {
           "price": "元/吨",
           "volume": "手",
@@ -61,25 +77,92 @@
         }
       },
       "BR": {
-        "source": "日报群/技术指标盘后正式稿；本执行者已独立与交易所官方日交易快讯逐项核对",
+        "source": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
         "contract": "BR2701",
-        "url": "https://www.shfe.com.cn/data/tradedata/future/dailydata/kx20261125.dat",
-        "reportDate": "20261125",
-        "officialUpdatedAt": "20261125 15:04:02 Asia/Shanghai",
-        "reportSha256": "4b309952192c8b880f4b1b33aef3474275f5d942c274d6f89e7ef508515c77f4",
-        "openInterest": 71477.0,
-        "settlement": 14845.0,
-        "volumeUnit": "手（已与11/24同合约新浪OHLCV逐项验证，无需乘2）",
-        "dailyWriterVerification": "微信日报撰写者仅交叉确认收盘；未独立核实本品种完整OHLCVOI，完整数据验证来自本执行者先前SHFE/INE官方原始报表",
+        "continuous": "BR0",
+        "openInterest": 62449.0,
+        "settlement": 15280.0,
+        "volumeUnit": "手",
         "units": {
           "price": "元/吨",
           "volume": "手",
           "openInterest": "手"
         }
       }
+    }
+  },
+  "officialSupplementHistory": [
+    {
+      "date": "2026-11-25",
+      "sources": {
+        "RU": {
+          "source": "日报群/技术指标盘后正式稿；本执行者已独立与交易所官方日交易快讯逐项核对",
+          "contract": "RU2701",
+          "url": "https://www.shfe.com.cn/data/tradedata/future/dailydata/kx20261125.dat",
+          "reportDate": "20261125",
+          "officialUpdatedAt": "20261125 15:04:02 Asia/Shanghai",
+          "reportSha256": "4b309952192c8b880f4b1b33aef3474275f5d942c274d6f89e7ef508515c77f4",
+          "openInterest": 93883.0,
+          "settlement": 18410.0,
+          "volumeUnit": "手（已与11/24同合约新浪OHLCV逐项验证，无需乘2）",
+          "dailyWriterVerification": "微信日报撰写者独立核实完整OHLC、成交与持仓；已有留档/workspace/ru-close/2026-11-25/hq.txt及min_final.json，未重新取数",
+          "units": {
+            "price": "元/吨",
+            "volume": "手",
+            "openInterest": "手"
+          }
+        },
+        "NR": {
+          "source": "日报群/技术指标盘后正式稿；本执行者已独立与交易所官方日交易快讯逐项核对",
+          "contract": "NR2701",
+          "url": "https://www.ine.cn/data/tradedata/future/dailydata/kx20261125.dat",
+          "reportDate": "20261125",
+          "officialUpdatedAt": "20261125 15:04:03 Asia/Shanghai",
+          "reportSha256": "3bdb72cbe1501703312de751d8c1812826ac3afde8cc93e39d89fdd7105a3824",
+          "openInterest": 48470.0,
+          "settlement": 15640.0,
+          "volumeUnit": "手（已与11/24同合约新浪OHLCV逐项验证，无需乘2）",
+          "dailyWriterVerification": "微信日报撰写者仅交叉确认收盘；未独立核实本品种完整OHLCVOI，完整数据验证来自本执行者先前SHFE/INE官方原始报表",
+          "units": {
+            "price": "元/吨",
+            "volume": "手",
+            "openInterest": "手"
+          }
+        },
+        "BR": {
+          "source": "日报群/技术指标盘后正式稿；本执行者已独立与交易所官方日交易快讯逐项核对",
+          "contract": "BR2701",
+          "url": "https://www.shfe.com.cn/data/tradedata/future/dailydata/kx20261125.dat",
+          "reportDate": "20261125",
+          "officialUpdatedAt": "20261125 15:04:02 Asia/Shanghai",
+          "reportSha256": "4b309952192c8b880f4b1b33aef3474275f5d942c274d6f89e7ef508515c77f4",
+          "openInterest": 71477.0,
+          "settlement": 14845.0,
+          "volumeUnit": "手（已与11/24同合约新浪OHLCV逐项验证，无需乘2）",
+          "dailyWriterVerification": "微信日报撰写者仅交叉确认收盘；未独立核实本品种完整OHLCVOI，完整数据验证来自本执行者先前SHFE/INE官方原始报表",
+          "units": {
+            "price": "元/吨",
+            "volume": "手",
+            "openInterest": "手"
+          }
+        }
+      },
+      "session": "前夜盘 + 当日日盘完整日K；收盘价不使用结算价",
+      "method": "人工授权：官方原始报表核验后直接补入；同日覆盖幂等、滚动250条",
+      "inputSource": "日报群/技术指标盘后正式稿（与SHFE/INE原始日交易快讯逐项核对）"
+    }
+  ],
+  "window": {
+    "dropped": {
+      "RU": "2025-11-14",
+      "NR": "2025-11-14",
+      "BR": "2025-11-14"
     },
-    "session": "前夜盘 + 当日日盘完整日K；收盘价不使用结算价",
-    "method": "人工授权：官方原始报表核验后直接补入；同日覆盖幂等、滚动250条",
-    "inputSource": "日报群/技术指标盘后正式稿（与SHFE/INE原始日交易快讯逐项核对）"
+    "replacedSameDay": {},
+    "oldest": {
+      "RU": "2025-11-17",
+      "NR": "2025-11-17",
+      "BR": "2025-11-17"
+    }
   }
 }
