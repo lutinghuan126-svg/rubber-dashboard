@@ -1,62 +1,66 @@
 {
-  "source": "历史：新浪主力连续日K；2026-11-25 与 2026-11-26：盘后正式稿/交易所官方快讯（经日报技术指标稿）直接补入，不是新浪实抓",
+  "source": "历史：新浪主力连续日K；2026-11-25、2026-11-26 与 2026-11-27：盘后正式稿/交易所官方快讯/日报收盘直接补入，不是新浪实抓",
   "contracts": {
     "RU": "RU0",
     "NR": "NR0",
     "BR": "BR0"
   },
   "timezone": "Asia/Shanghai",
-  "fetchStartedAt": "2026-11-26T15:26:20+08:00",
-  "fetchedAt": "2026-11-26T15:26:20+08:00",
-  "sha256": "d9189f70b899ade4795e3b534cf254283bbfaf531d4ae0bc716633c7de8fff7d",
+  "fetchStartedAt": "2026-11-27T15:46:22+08:00",
+  "fetchedAt": "2026-11-27T15:46:22+08:00",
+  "sha256": "d5363e88e2c51a293eacb5b968b3596b48a8534a9fd4a109971a3841c1fa8b72",
   "latest": {
-    "RU": "2026-11-26",
-    "NR": "2026-11-26",
-    "BR": "2026-11-26"
+    "RU": "2026-11-27",
+    "NR": "2026-11-27",
+    "BR": "2026-11-27"
   },
   "counts": {
     "RU": 250,
     "NR": 250,
     "BR": 250
   },
-  "notice": "11月26日由盘后正式稿/交易所官方快讯（经日报技术指标稿）直接补入完整日K（25日夜盘+26日日盘），不是新浪已更新；成交单位与历史一致为手，持仓/结算存元数据，不改变原OHLCV schema，不用结算价当收盘价。连续合约今日仍跟踪 RU2701 / NR2701 / BR2701，不改为 RU2705。量价顶底与早期背离等原算法若仍排除当天，今日K不参与确认。",
+  "notice": "11月27日由盘后正式稿/交易所官方快讯/日报收盘直接补入完整日K（26日夜盘+27日日盘），不是新浪已更新；成交单位与历史一致为手，持仓/结算存元数据，不改变原OHLCV schema，不用结算价当收盘价，也不用新浪 RU0/RU2705 的 18900。连续合约今日仍跟踪 RU2701 / NR2701 / BR2701，不改为 RU2705。量价顶底与早期背离等原算法若仍排除当天，今日K不参与确认。",
   "sinaFetchedAt": "2026-11-25T16:25:23+08:00",
-  "manualUpdatedAt": "2026-11-26T15:26:20+08:00",
+  "manualUpdatedAt": "2026-11-27T15:46:22+08:00",
   "fetchedAtMeaning": "本次官方补K写入时间；不是新浪抓取时间",
   "officialSupplement": {
-    "date": "2026-11-26",
-    "session": "前夜盘 + 当日日盘完整日K；收盘价不使用结算价",
+    "date": "2026-11-27",
+    "session": "前夜盘 + 当日日盘完整日K；收盘价不使用结算价；不含今晚夜盘",
     "method": "人工授权：按盘后正式技术指标稿中的已完成日K直接补入；同日覆盖幂等、滚动250条；未向新浪取数",
-    "inputSource": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
+    "inputSource": "盘后正式稿/交易所官方快讯/日报收盘",
     "excelCloseCrossCheck": {
       "RU": {
-        "xlsxLatestDate": "2026-11-26",
-        "xlsxClose": 18550.0,
-        "klineClose": 18550.0,
+        "officialDraftClose": 18830.0,
+        "klineClose": 18830.0,
+        "dailyReportWriterVerifiedClose": true,
         "match": true
       },
       "NR": {
-        "xlsxLatestDate": "2026-11-26",
-        "xlsxClose": 15860.0,
-        "klineClose": 15860.0,
+        "officialDraftClose": 16055.0,
+        "klineClose": 16055.0,
+        "dailyReportWriterVerifiedClose": true,
+        "ohlcVolumeOiCrossCheckedByDailyWriter": false,
         "match": true
       },
       "BR": {
-        "xlsxLatestDate": "2026-11-26",
-        "xlsxClose": 15285.0,
-        "klineClose": 15285.0,
+        "officialDraftClose": 15380.0,
+        "klineClose": 15380.0,
+        "dailyReportWriterVerifiedClose": true,
+        "ohlcVolumeOiCrossCheckedByDailyWriter": false,
         "match": true
       },
-      "excelFilesNotModified": true
+      "excelFilesNotModified": true,
+      "excelFilesNotOpened": true
     },
     "sources": {
       "RU": {
-        "source": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
+        "source": "盘后正式稿/交易所官方快讯/日报收盘",
         "contract": "RU2701",
         "continuous": "RU0",
-        "openInterest": 82857.0,
-        "settlement": 18530.0,
+        "openInterest": 74595.0,
+        "settlement": 18715.0,
         "volumeUnit": "手",
+        "dailyWriterVerification": "微信日报撰写者已按 15:00 官方收盘字段核对，与盘后正式稿一致；未采用结算价 18715，也未采用新浪 RU0/RU2705 的 18900。",
         "units": {
           "price": "元/吨",
           "volume": "手",
@@ -64,12 +68,13 @@
         }
       },
       "NR": {
-        "source": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
+        "source": "盘后正式稿/交易所官方快讯/日报收盘",
         "contract": "NR2701",
         "continuous": "NR0",
-        "openInterest": 42480.0,
-        "settlement": 15825.0,
+        "openInterest": 39280.0,
+        "settlement": 15960.0,
         "volumeUnit": "手",
+        "dailyWriterVerification": "收盘与日报一致；微信日报撰写者表示尚未完整核对今日开高低、成交和持仓，未能交叉确认。",
         "units": {
           "price": "元/吨",
           "volume": "手",
@@ -77,12 +82,13 @@
         }
       },
       "BR": {
-        "source": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
+        "source": "盘后正式稿/交易所官方快讯/日报收盘",
         "contract": "BR2701",
         "continuous": "BR0",
-        "openInterest": 62449.0,
-        "settlement": 15280.0,
+        "openInterest": 56889.0,
+        "settlement": 15270.0,
         "volumeUnit": "手",
+        "dailyWriterVerification": "收盘与日报一致；微信日报撰写者表示尚未完整核对今日开高低、成交和持仓，未能交叉确认。",
         "units": {
           "price": "元/吨",
           "volume": "手",
@@ -92,6 +98,74 @@
     }
   },
   "officialSupplementHistory": [
+    {
+      "date": "2026-11-26",
+      "sources": {
+        "RU": {
+          "source": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
+          "contract": "RU2701",
+          "continuous": "RU0",
+          "openInterest": 82857.0,
+          "settlement": 18530.0,
+          "volumeUnit": "手",
+          "units": {
+            "price": "元/吨",
+            "volume": "手",
+            "openInterest": "手"
+          }
+        },
+        "NR": {
+          "source": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
+          "contract": "NR2701",
+          "continuous": "NR0",
+          "openInterest": 42480.0,
+          "settlement": 15825.0,
+          "volumeUnit": "手",
+          "units": {
+            "price": "元/吨",
+            "volume": "手",
+            "openInterest": "手"
+          }
+        },
+        "BR": {
+          "source": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
+          "contract": "BR2701",
+          "continuous": "BR0",
+          "openInterest": 62449.0,
+          "settlement": 15280.0,
+          "volumeUnit": "手",
+          "units": {
+            "price": "元/吨",
+            "volume": "手",
+            "openInterest": "手"
+          }
+        }
+      },
+      "session": "前夜盘 + 当日日盘完整日K；收盘价不使用结算价",
+      "method": "人工授权：按盘后正式技术指标稿中的已完成日K直接补入；同日覆盖幂等、滚动250条；未向新浪取数",
+      "inputSource": "盘后正式稿/交易所官方快讯（经日报技术指标稿）",
+      "excelCloseCrossCheck": {
+        "RU": {
+          "xlsxLatestDate": "2026-11-26",
+          "xlsxClose": 18550.0,
+          "klineClose": 18550.0,
+          "match": true
+        },
+        "NR": {
+          "xlsxLatestDate": "2026-11-26",
+          "xlsxClose": 15860.0,
+          "klineClose": 15860.0,
+          "match": true
+        },
+        "BR": {
+          "xlsxLatestDate": "2026-11-26",
+          "xlsxClose": 15285.0,
+          "klineClose": 15285.0,
+          "match": true
+        },
+        "excelFilesNotModified": true
+      }
+    },
     {
       "date": "2026-11-25",
       "sources": {
@@ -154,15 +228,15 @@
   ],
   "window": {
     "dropped": {
-      "RU": "2025-11-14",
-      "NR": "2025-11-14",
-      "BR": "2025-11-14"
-    },
-    "replacedSameDay": {},
-    "oldest": {
       "RU": "2025-11-17",
       "NR": "2025-11-17",
       "BR": "2025-11-17"
+    },
+    "replacedSameDay": {},
+    "oldest": {
+      "RU": "2025-11-18",
+      "NR": "2025-11-18",
+      "BR": "2025-11-18"
     }
   }
 }
