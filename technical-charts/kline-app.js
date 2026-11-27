@@ -74,6 +74,36 @@ function validate(data){
   });
  }
 }
+function escapeTooltip(v){
+ return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+}
+function candleRowFromTooltip(params){
+ params=Array.isArray(params)?params:(params?[params]:[]);
+ var rows=DATA[state.symbol]||[],day='',row=null,i,p;
+ for(i=0;i<params.length;i++){
+  p=params[i]||{};
+  if(p.axisValue)day=p.axisValue;
+  else if(!day&&p.name)day=p.name;
+  else if(!day&&Array.isArray(p.value)&&typeof p.value[0]==='string')day=p.value[0];
+  else if(!day&&p.data&&Array.isArray(p.data.value)&&typeof p.data.value[0]==='string')day=p.data.value[0];
+  if(!row&&p.dataIndex!=null&&rows[p.dataIndex]&&(p.seriesType==='candlestick'||!day||rows[p.dataIndex][0]===day))row=rows[p.dataIndex];
+ }
+ if(!row&&day){for(i=0;i<rows.length;i++)if(rows[i][0]===day){row=rows[i];break;}}
+ if(!row&&params[0]&&params[0].dataIndex!=null)row=rows[params[0].dataIndex]||null;
+ return row||null;
+}
+function priceOnlyTooltip(params){
+ var row=candleRowFromTooltip(params);
+ if(!row){
+  params=Array.isArray(params)?params:(params?[params]:[]);
+  return escapeTooltip((params[0]&&(params[0].axisValue||params[0].name))||'');
+ }
+ return escapeTooltip(row[0])+'<br>开 '+escapeTooltip(row[1])+'<br>高 '+escapeTooltip(row[4])+'<br>低 '+escapeTooltip(row[3])+'<br>收 '+escapeTooltip(row[2]);
+}
+function applyPriceOnlyItemTooltips(list){
+ list.forEach(function(s){if(s&&s.tooltip)s.tooltip={trigger:'item',formatter:priceOnlyTooltip};});
+ return list;
+}
 function render(){
   var st = getSt(), sym = st.symbol, rows = DATA[sym] || [];
   if(st.divergence)st.subs.MACD=true;
@@ -178,13 +208,13 @@ function render(){
       series[0].markArea = {silent:true, data: cl.areas.map(function(a){ return [{xAxis:a.x1, yAxis:a.zg, itemStyle:{color:'rgba(245,197,24,0.13)'}}, {xAxis:a.x2, yAxis:a.zd}]; })};
     }
   }
-  if(divergence)series=series.concat(divergenceSeries(divergence,rows,subs.indexOf('MACD')+1));
-  if(evr)series=series.concat(UserPriceVolume.series(evr));
+  if(divergence)series=series.concat(applyPriceOnlyItemTooltips(divergenceSeries(divergence,rows,subs.indexOf('MACD')+1)));
+  if(evr)series=series.concat(applyPriceOnlyItemTooltips(UserPriceVolume.series(evr)));
   var allIdx = xAxes.map(function(_,i){return i;});
   chart.setOption({
     animation:false,
     legend:{type:'scroll',data:legendData,selectedMode:true,selected:Object.fromEntries(Object.entries(legendSelection).filter(function(entry){return legendData.indexOf(entry[0])!==-1;})),top:0,left:layout.left,right:layout.right,textStyle:{color:tc}},
-    tooltip:{trigger:'axis', axisPointer:{type:'cross'},formatter:evr?function(params){return UserPriceVolume.axisTooltip(params,evr,rows);}:undefined},
+    tooltip:{trigger:'axis', axisPointer:{type:'cross'},formatter:priceOnlyTooltip},
     axisPointer:{link:[{xAxisIndex:'all'}]},
     grid:grids, xAxis:xAxes, yAxis:yAxes,
     dataZoom:[{type:'inside',xAxisIndex:allIdx,start:zoom.start,end:zoom.end},{type:'slider',xAxisIndex:allIdx,bottom:8,height:20,start:zoom.start,end:zoom.end}],
@@ -195,7 +225,7 @@ function render(){
 }
 
 // View-only controller. Never reparents the iframe or resets chart/indicator state.
-var technicalView={mode:null,native:false,version:0,snapshot:null,bound:false,resizeQueued:false};
+var technicalView={mode:null,native:false,version:0,snapshot:null,bound:false,resizeQueued:false,orientationLocked:false};
 function technicalLayout(count){
  if(!technicalView.mode)return {H:440+count*110,priceTop:44,sliderH:48,subBlock:110,left:68,right:24};
  var mobile=technicalView.mode==='mobile',host=document.getElementById('chart-scroll');
@@ -206,16 +236,57 @@ function technicalLayout(count){
  return {H:Math.max(available,priceTop+sliderH+8+minimum+count*subBlock),priceTop:priceTop,sliderH:sliderH,subBlock:subBlock,left:mobile?48:68,right:mobile?12:24};
 }
 function technicalFullscreenOwned(){return document.fullscreenElement===document.documentElement;}
+function portraitViewport(){
+ var w,h;
+ if(window.visualViewport&&window.visualViewport.width&&window.visualViewport.height){w=window.visualViewport.width;h=window.visualViewport.height;}
+ else{w=window.innerWidth||0;h=window.innerHeight||0;}
+ return h>w;
+}
+function syncMobileLandscapePresentation(){
+ var fallback=technicalView.mode==='mobile'&&portraitViewport();
+ document.body.classList.toggle('technical-landscape-fallback',!!fallback);
+ return fallback;
+}
+async function lockMobileLandscape(version){
+ technicalView.orientationLocked=false;
+ if(technicalView.mode!=='mobile')return false;
+ var orientation=window.screen&&window.screen.orientation;
+ if(!orientation||typeof orientation.lock!=='function')return false;
+ var types=['landscape','landscape-primary','landscape-secondary'];
+ for(var i=0;i<types.length;i++){
+  try{
+   await orientation.lock(types[i]);
+   if((version!=null&&version!==technicalView.version)||technicalView.mode!=='mobile'){unlockMobileLandscape();return false;}
+   technicalView.orientationLocked=true;
+   return true;
+  }catch(error){}
+ }
+ return false;
+}
+function unlockMobileLandscape(){
+ try{
+  var orientation=window.screen&&window.screen.orientation;
+  if(orientation&&typeof orientation.unlock==='function')orientation.unlock();
+ }catch(error){}
+ technicalView.orientationLocked=false;
+}
+function mobileViewHint(){
+ if(technicalView.orientationLocked)return '；横屏（宽屏）布局查看，已锁定横屏方向；副图较多时在图内上下滑动。';
+ if(document.body.classList.contains('technical-landscape-fallback'))return '；横屏（宽屏）布局查看；未能锁定方向，竖持已旋转/重排为横屏画面，也可手动横置；副图较多时在图内上下滑动。';
+ return '；横屏（宽屏）布局查看，当前已是横屏；副图较多时在图内上下滑动。';
+}
 function syncTechnicalView(){
  var active=!!technicalView.mode||technicalFullscreenOwned();
+ if(technicalView.mode==='mobile')syncMobileLandscapePresentation();
+ else document.body.classList.remove('technical-landscape-fallback');
  ['desktop','mobile'].forEach(function(mode){var e=document.getElementById(mode==='desktop'?'technical-fullscreen':'technical-mobile-fullscreen');if(e){e.setAttribute('aria-pressed',String(technicalView.mode===mode));e.classList.toggle('on',technicalView.mode===mode);}});
  var exit=document.getElementById('technical-exit-fullscreen'),hint=document.getElementById('technical-view-hint');
  if(exit)exit.hidden=!active;
- if(hint){hint.hidden=!active;hint.textContent=(technicalFullscreenOwned()?'已进入浏览器全屏':'视口铺满（未进入系统全屏）')+(technicalView.mode==='mobile'?'；手机触控布局，不强制旋转，可手动横置；副图较多时在图内上下滑动。':'；可点「退出全屏」或按 Esc 返回。');}
+ if(hint){hint.hidden=!active;hint.textContent=(technicalFullscreenOwned()?'已进入浏览器全屏':'视口铺满（未进入系统全屏）')+(technicalView.mode==='mobile'?mobileViewHint():'；可点「退出全屏」或按 Esc 返回。');}
 }
 function scheduleTechnicalResize(){
  if(technicalView.resizeQueued)return;technicalView.resizeQueued=true;
- (window.requestAnimationFrame||function(fn){return setTimeout(fn,0);})(function(){technicalView.resizeQueued=false;if(chart){if(technicalView.mode)render();else chart.resize();}});
+ (window.requestAnimationFrame||function(fn){return setTimeout(fn,0);})(function(){technicalView.resizeQueued=false;if(technicalView.mode==='mobile')syncMobileLandscapePresentation();if(chart){if(technicalView.mode)render();else chart.resize();}if(technicalView.mode)syncTechnicalView();});
 }
 function technicalEscape(event){if(event.key==='Escape'&&(technicalView.mode||technicalFullscreenOwned())){event.preventDefault();exitTechnicalView();}}
 function openTechnicalOverlay(){
@@ -240,11 +311,16 @@ function restoreTechnicalOverlay(){
  if(snap.focus&&snap.focus.isConnected&&snap.focus.focus)snap.focus.focus({preventScroll:true});
 }
 function applyTechnicalMode(mode){
- technicalView.mode=mode;document.body.classList.toggle('technical-expanded',!!mode);document.body.classList.toggle('technical-mobile',mode==='mobile');syncTechnicalView();if(chart)render();
+ var previous=technicalView.mode;
+ technicalView.mode=mode;document.body.classList.toggle('technical-expanded',!!mode);document.body.classList.toggle('technical-mobile',mode==='mobile');
+ if(mode!=='mobile'){document.body.classList.remove('technical-landscape-fallback');if(previous==='mobile')unlockMobileLandscape();}
+ else syncMobileLandscapePresentation();
+ syncTechnicalView();if(chart)render();
 }
 async function exitTechnicalView(requestNative){
  technicalView.version++;technicalView.mode=null;technicalView.native=false;
- document.body.classList.remove('technical-expanded','technical-mobile');restoreTechnicalOverlay();syncTechnicalView();if(chart)render();
+ unlockMobileLandscape();
+ document.body.classList.remove('technical-expanded','technical-mobile','technical-landscape-fallback');restoreTechnicalOverlay();syncTechnicalView();if(chart)render();
  if(requestNative!==false&&technicalFullscreenOwned()&&document.exitFullscreen){
   try{await document.exitFullscreen();}catch(error){var h=document.getElementById('technical-view-hint');h.hidden=false;h.textContent='浏览器尚未退出系统全屏，请按 Esc 或再次点「退出全屏」。';document.getElementById('technical-exit-fullscreen').hidden=false;}
  }
@@ -253,7 +329,13 @@ async function exitTechnicalView(requestNative){
 async function toggleTechnicalView(mode){
  if(mode!== 'desktop'&&mode!=='mobile')return;
  if(technicalView.mode===mode){await exitTechnicalView();return;}
- if(technicalView.mode){applyTechnicalMode(mode);scheduleTechnicalResize();return;}
+ if(technicalView.mode){
+  var switchVersion=technicalView.version;
+  applyTechnicalMode(mode);
+  if(mode==='mobile')await lockMobileLandscape(technicalView.version);
+  if(switchVersion!==technicalView.version||!technicalView.mode)return;
+  syncMobileLandscapePresentation();syncTechnicalView();scheduleTechnicalResize();return;
+ }
  var version=++technicalView.version;openTechnicalOverlay();applyTechnicalMode(mode);
  var exit=document.getElementById('technical-exit-fullscreen');if(exit)exit.focus({preventScroll:true});
  var root=document.documentElement;
@@ -264,7 +346,10 @@ async function toggleTechnicalView(mode){
    technicalView.native=technicalFullscreenOwned();
   }catch(error){/* Permission/API failure keeps the explicitly labelled viewport fallback. */}
  }
- syncTechnicalView();scheduleTechnicalResize();
+ if(version!==technicalView.version||!technicalView.mode)return;
+ if(technicalView.mode==='mobile')await lockMobileLandscape(version);
+ if(version!==technicalView.version||!technicalView.mode)return;
+ syncMobileLandscapePresentation();syncTechnicalView();scheduleTechnicalResize();
 }
 function setupTechnicalView(){
  if(technicalView.bound)return;technicalView.bound=true;
@@ -275,6 +360,7 @@ function setupTechnicalView(){
  window.addEventListener('resize',scheduleTechnicalResize);window.addEventListener('orientationchange',scheduleTechnicalResize);
  window.addEventListener('pagehide',function(){exitTechnicalView(false);});
  if(window.visualViewport)window.visualViewport.addEventListener('resize',scheduleTechnicalResize);
+ try{if(window.screen&&window.screen.orientation&&window.screen.orientation.addEventListener)window.screen.orientation.addEventListener('change',scheduleTechnicalResize);}catch(error){}
  syncTechnicalView();
 }
 
